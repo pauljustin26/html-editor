@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Cloud } from 'lucide-react';
 import { Trash2, Copy, Download, Check, AlertCircle, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import type { FeedbackItem } from '../types';
 import { compileFeedbackToMarkdown, downloadMarkdownFile } from '../utils/markdownCompiler';
@@ -7,9 +8,11 @@ interface FeedbackQueueProps {
   items: FeedbackItem[];
   onDeleteItem: (id: string) => void;
   onClearQueue: () => void;
+  onSyncCloud: () => void;
+  isSyncing: boolean;
 }
 
-export function FeedbackQueue({ items, onDeleteItem, onClearQueue }: FeedbackQueueProps) {
+export function FeedbackQueue({ items, onDeleteItem, onClearQueue, onSyncCloud, isSyncing }: FeedbackQueueProps) {
   const [copied, setCopied] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -70,6 +73,16 @@ export function FeedbackQueue({ items, onDeleteItem, onClearQueue }: FeedbackQue
           Total items: <span className="text-[#cccccc] font-bold">{items.length}</span>
         </div>
         <div className="flex items-center gap-2">
+            {/* Sync from Cloud button */}
+            <button
+              onClick={onSyncCloud}
+              disabled={isSyncing}
+              className="flex items-center gap-1 px-2.5 py-1 text-xs bg-[#3c7a3c] text-[#ffffff] hover:bg-[#2e6e2e] rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              title="Sync feedback items from cloud storage"
+            >
+              <Cloud size={13} className="text-[#ffffff]" />
+              {isSyncing ? 'Syncing...' : 'Sync Cloud'}
+            </button>
           <button
             onClick={handleCopyMarkdown}
             className="flex items-center gap-1 px-2.5 py-1 text-xs bg-[#3c3c3c] text-[#cccccc] hover:bg-[#4a4a4a] rounded border border-[#474747] transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#007acc]"

@@ -13,9 +13,9 @@ interface StatusBarProps {
 }
 
 const PLATFORMS = [
-  { id: 'rakuten', label: 'Rakuten', limit: 128000 },
-  { id: 'yahoo', label: 'Yahoo Shopping', limit: 100000 },
-  { id: 'custom', label: 'Custom', limit: 0 },
+  { id: 'standard', label: 'Standard (128 KB)', limit: 128000 },
+  { id: 'compact', label: 'Compact (30 KB)', limit: 30000 },
+  { id: 'unlimited', label: 'No Limit', limit: 0 },
 ];
 
 export function StatusBar({

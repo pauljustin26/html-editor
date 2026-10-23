@@ -92,7 +92,7 @@ export function BatchModal({ isOpen, onClose, products, onProductsChange, onSele
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-4 py-3 border-b border-[#333333] shrink-0">
-          <h2 className="text-sm font-semibold text-[#cccccc]">Excel Batch Mode (PC & SP)</h2>
+          <h2 className="text-sm font-semibold text-[#cccccc]">Spreadsheet Batch Mode</h2>
           <button
             onClick={onClose}
             className="text-[#999999] hover:text-[#cccccc] cursor-pointer p-1 rounded
@@ -105,7 +105,7 @@ export function BatchModal({ isOpen, onClose, products, onProductsChange, onSele
         <div className="flex-1 overflow-hidden flex flex-col">
           <div className="p-4 border-b border-[#333333] shrink-0">
             <label className="text-[11px] text-[#999999] block mb-1">
-              Paste spreadsheet data (Name → PC HTML → SP HTML, tab-separated):
+              Paste spreadsheet data (Name → Desktop HTML → Mobile HTML, tab-separated):
             </label>
             <textarea
               ref={_textareaRef}

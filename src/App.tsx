@@ -22,51 +22,41 @@ import type { BreadcrumbNode } from './utils/breadcrumbParser';
 import { useDebounce } from './hooks/useDebounce';
 import { THEME_OPTIONS, type ProductRow, type SidebarTab, type EditorViewMode, type AppThemeId } from './types';
 
-const DEFAULT_PC_HTML = `<!-- Desktop (PC) HTML Description -->
-<div class="pc-description" style="max-width: 900px; margin: 0 auto; font-family: sans-serif;">
-  <h2 style="font-size: 20px; border-bottom: 2px solid #333; padding-bottom: 6px;">商品説明（パソコン用）</h2>
-  <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse; margin-top: 12px;">
-    <tr>
-      <td style="background: #f7f7f7; width: 25%;">商品名</td>
-      <td>プレミアム サンプル商品</td>
-    </tr>
-    <tr>
-      <td style="background: #f7f7f7;">価格</td>
-      <td>¥2,980（税込）</td>
-    </tr>
-    <tr>
-      <td style="background: #f7f7f7;">送料</td>
-      <td>全国一律 送料無料</td>
-    </tr>
-  </table>
-  <div style="margin-top: 16px; text-align: center;">
-    <img src="https://placehold.co/750x380?text=PC+Desktop+Banner" alt="PC商品メイン画像" style="max-width: 100%; height: auto;" />
+const DEFAULT_PC_HTML = `<!-- Desktop HTML Layout -->
+<section style="max-width: 800px; margin: 0 auto; font-family: system-ui, sans-serif; padding: 20px;">
+  <header style="border-bottom: 2px solid #007acc; padding-bottom: 10px; margin-bottom: 20px;">
+    <h1 style="font-size: 24px; color: #111; margin: 0;">Modern Web Component</h1>
+    <p style="font-size: 14px; color: #666; margin: 6px 0 0;">Clean, modular HTML designed for desktop viewing.</p>
+  </header>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+    <div style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 16px;">
+      <h3 style="font-size: 16px; margin-top: 0;">Feature Highlights</h3>
+      <ul style="font-size: 13px; color: #444; padding-left: 20px; line-height: 1.6;">
+        <li>High-performance layout</li>
+        <li>Accessible contrast structure</li>
+        <li>Fully responsive grid</li>
+      </ul>
+    </div>
+    <div style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 16px;">
+      <h3 style="font-size: 16px; margin-top: 0;">Specifications</h3>
+      <p style="font-size: 13px; color: #555; line-height: 1.5;">Dimensions, attributes, and custom metadata blocks go here.</p>
+    </div>
   </div>
-</div>`;
+</section>`;
 
-const DEFAULT_SP_HTML = `<!-- Smartphone (SP) HTML Description -->
-<div class="sp-description" style="width: 100%; font-family: sans-serif;">
-  <div style="text-align: center; margin-bottom: 10px;">
-    <img src="https://placehold.co/375x240?text=SP+Smartphone+Header" alt="SP商品画像" style="width: 100%; height: auto;" />
+const DEFAULT_SP_HTML = `<!-- Mobile HTML Layout -->
+<div style="width: 100%; font-family: system-ui, sans-serif; padding: 12px; box-sizing: border-box;">
+  <div style="background: #007acc; color: #fff; padding: 14px; border-radius: 8px; text-align: center; margin-bottom: 12px;">
+    <h2 style="font-size: 18px; margin: 0;">Mobile Responsive Card</h2>
+    <p style="font-size: 12px; opacity: 0.9; margin: 4px 0 0;">Optimized for smartphone screens</p>
   </div>
-  <h2 style="font-size: 16px; color: #111; margin: 8px 0; font-weight: bold;">スマートフォン用商品詳細</h2>
-  <p style="font-size: 13px; line-height: 1.5; color: #555;">
-    スマホ画面に最適化した縦並びのレスポンシブ商品コードです。
+  <p style="font-size: 13px; color: #444; line-height: 1.6;">
+    Vertical single-column layout with touch-friendly elements and fluid viewport scaling.
   </p>
-  <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px;">
-    <tr>
-      <td style="background: #eee; width: 35%;">商品名</td>
-      <td>サンプル商品 (SP)</td>
-    </tr>
-    <tr>
-      <td style="background: #eee;">価格</td>
-      <td>¥2,980（送料無料）</td>
-    </tr>
-  </table>
-  <div style="margin-top: 14px; text-align: center;">
-    <a href="#" style="display: block; background: #bf0000; color: #fff; text-decoration: none; padding: 10px; font-weight: bold; border-radius: 4px;">
-      今すぐ購入する
-    </a>
+  <div style="margin-top: 16px;">
+    <button style="width: 100%; background: #111; color: #fff; border: none; padding: 12px; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer;">
+      Primary Action
+    </button>
   </div>
 </div>`;
 
@@ -79,6 +69,14 @@ export default function App() {
 
   // Active code pointer
   const activeHtml = editorMode === 'pc' ? pcHtml : spHtml;
+
+  // Refs to always have current values (avoids stale closures in callbacks)
+  const pcHtmlRef = useRef(pcHtml);
+  pcHtmlRef.current = pcHtml;
+  const spHtmlRef = useRef(spHtml);
+  spHtmlRef.current = spHtml;
+  const editorModeRef = useRef(editorMode);
+  editorModeRef.current = editorMode;
 
   // Theme state with LocalStorage persistence
   const [theme, setTheme] = useState<AppThemeId>(() => {
@@ -98,7 +96,7 @@ export default function App() {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [products, setProducts] = useState<ProductRow[]>([]);
   const [activeProductId, setActiveProductId] = useState<string | null>(null);
-  const [platform, setPlatform] = useState('rakuten');
+  const [platform, setPlatform] = useState('standard');
 
   // Editor ref
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
@@ -230,7 +228,8 @@ export default function App() {
   // Editor content change
   const handleEditorChange = useCallback((value: string | undefined) => {
     const val = value ?? '';
-    if (editorMode === 'pc') {
+    const currentMode = editorModeRef.current;
+    if (currentMode === 'pc') {
       setPcHtml(val);
     } else {
       setSpHtml(val);
@@ -240,22 +239,25 @@ export default function App() {
       setProducts(prev =>
         prev.map(p =>
           p.id === activeProductId
-            ? { ...p, [editorMode === 'pc' ? 'pcHtml' : 'spHtml']: val, modified: true }
+            ? { ...p, [currentMode === 'pc' ? 'pcHtml' : 'spHtml']: val, modified: true }
             : p
         )
       );
     }
-  }, [editorMode, activeProductId]);
+  }, [activeProductId]);
 
   // Switching editor mode between PC and SP
   const switchEditorMode = useCallback((mode: EditorViewMode) => {
+    // IMPORTANT: Update the ref synchronously BEFORE setValue,
+    // because setValue triggers onChange which reads editorModeRef
+    editorModeRef.current = mode;
     setEditorMode(mode);
     setPreviewMode(mode);
-    const nextHtml = mode === 'pc' ? pcHtml : spHtml;
+    const nextHtml = mode === 'pc' ? pcHtmlRef.current : spHtmlRef.current;
     if (editorRef.current && editorRef.current.getValue() !== nextHtml) {
       editorRef.current.setValue(nextHtml);
     }
-  }, [pcHtml, spHtml]);
+  }, []);
 
   // Navigation helpers
   const goToLine = useCallback((line: number, column: number = 1) => {
@@ -379,7 +381,7 @@ export default function App() {
             }`}
           >
             <Monitor size={13} className={editorMode === 'pc' ? 'text-[#007acc]' : ''} />
-            <span>PC HTML Code</span>
+            <span>Desktop HTML</span>
           </button>
 
           <button
@@ -391,7 +393,7 @@ export default function App() {
             }`}
           >
             <Smartphone size={13} className={editorMode === 'sp' ? 'text-[#007acc]' : ''} />
-            <span>SP (Mobile) HTML Code</span>
+            <span>Mobile HTML</span>
           </button>
         </div>
 
