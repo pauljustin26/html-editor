@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
-/* VS Code Dark+ Theme Tokens */
-:root {
+/* Theme Tokens */
+:root,
+[data-theme="vs-dark"] {
   --bg-primary: #1e1e1e;
   --bg-secondary: #252526;
   --bg-tertiary: #2d2d2d;
@@ -18,6 +19,71 @@
   --warning: #cca700;
   --success: #4ec9b0;
   --info: #569cd6;
+  --scrollbar-thumb: #424242;
+  --scrollbar-track: #252526;
+}
+
+[data-theme="vs-light"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f3f3f3;
+  --bg-tertiary: #e9e9e9;
+  --bg-hover: #e4e4e4;
+  --bg-active: #dcdcdc;
+  --border-primary: #e0e0e0;
+  --border-secondary: #cccccc;
+  --accent: #007acc;
+  --accent-hover: #0062a3;
+  --text-primary: #1f1f1f;
+  --text-secondary: #5a5a5a;
+  --text-muted: #767676;
+  --error: #cd3131;
+  --warning: #855f00;
+  --success: #107c41;
+  --info: #005fb8;
+  --scrollbar-thumb: #c1c1c1;
+  --scrollbar-track: #f3f3f3;
+}
+
+[data-theme="monokai"] {
+  --bg-primary: #272822;
+  --bg-secondary: #1e1f1c;
+  --bg-tertiary: #383830;
+  --bg-hover: #3e3d32;
+  --bg-active: #49483e;
+  --border-primary: #414339;
+  --border-secondary: #575b4e;
+  --accent: #a6e22e;
+  --accent-hover: #b8f042;
+  --text-primary: #f8f8f2;
+  --text-secondary: #cfcfc2;
+  --text-muted: #75715e;
+  --error: #f92672;
+  --warning: #fd971f;
+  --success: #a6e22e;
+  --info: #66d9ef;
+  --scrollbar-thumb: #49483e;
+  --scrollbar-track: #1e1f1c;
+}
+
+[data-theme="hc-black"] {
+  --bg-primary: #000000;
+  --bg-secondary: #000000;
+  --bg-tertiary: #111111;
+  --bg-hover: #1f1f1f;
+  --bg-active: #2a2a2a;
+  --border-primary: #6fc1ff;
+  --border-secondary: #ffffff;
+  --accent: #6fc1ff;
+  --accent-hover: #9cdcfe;
+  --text-primary: #ffffff;
+  --text-secondary: #e0e0e0;
+  --text-muted: #9cdcfe;
+  --error: #f44747;
+  --warning: #ffd700;
+  --success: #89d185;
+  --info: #6fc1ff;
+  --scrollbar-thumb: #6fc1ff;
+  --scrollbar-track: #000000;
 }
 
 * {
@@ -33,6 +99,7 @@ body {
   overflow: hidden;
   height: 100vh;
   width: 100vw;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 #root {
@@ -43,23 +110,23 @@ body {
   overflow: hidden;
 }
 
-/* Custom scrollbar - VS Code style */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
+  background: var(--scrollbar-track);
 }
 ::-webkit-scrollbar-thumb {
-  background: #424242;
+  background: var(--scrollbar-thumb);
   border-radius: 0;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #555555;
+  filter: brightness(1.2);
 }
 ::-webkit-scrollbar-corner {
-  background: var(--bg-secondary);
+  background: var(--scrollbar-track);
 }
 
 /* Japanese text safety */
@@ -67,3 +134,51 @@ body {
   word-break: break-all;
   overflow-wrap: break-word;
 }
+
+/* VS Code Light+ class adapters */
+[data-theme="vs-light"] .bg-\[\#1e1e1e\] { background-color: #ffffff !important; }
+[data-theme="vs-light"] .bg-\[\#252526\] { background-color: #f3f3f3 !important; }
+[data-theme="vs-light"] .bg-\[\#2d2d2d\] { background-color: #e9e9e9 !important; }
+[data-theme="vs-light"] .bg-\[\#2a2d2e\] { background-color: #e4e4e4 !important; }
+[data-theme="vs-light"] .bg-\[\#181818\],
+[data-theme="vs-light"] .bg-\[\#141414\] { background-color: #ececec !important; }
+[data-theme="vs-light"] .bg-\[\#3c3c3c\] { background-color: #e1e1e1 !important; }
+[data-theme="vs-light"] .border-\[\#333333\] { border-color: #e0e0e0 !important; }
+[data-theme="vs-light"] .border-\[\#474747\] { border-color: #cccccc !important; }
+[data-theme="vs-light"] .text-\[\#cccccc\] { color: #1e1e1e !important; }
+[data-theme="vs-light"] .text-\[\#999999\] { color: #555555 !important; }
+[data-theme="vs-light"] .text-\[\#6b6b6b\] { color: #767676 !important; }
+[data-theme="vs-light"] .hover\:bg-\[\#2a2d2e\]:hover { background-color: #e4e4e4 !important; }
+[data-theme="vs-light"] .hover\:bg-\[\#4a4a4a\]:hover { background-color: #d6d6d6 !important; }
+
+/* Monokai class adapters */
+[data-theme="monokai"] .bg-\[\#1e1e1e\] { background-color: #272822 !important; }
+[data-theme="monokai"] .bg-\[\#252526\] { background-color: #1e1f1c !important; }
+[data-theme="monokai"] .bg-\[\#2d2d2d\] { background-color: #383830 !important; }
+[data-theme="monokai"] .bg-\[\#2a2d2e\] { background-color: #3e3d32 !important; }
+[data-theme="monokai"] .bg-\[\#181818\],
+[data-theme="monokai"] .bg-\[\#141414\] { background-color: #1a1a17 !important; }
+[data-theme="monokai"] .bg-\[\#3c3c3c\] { background-color: #49483e !important; }
+[data-theme="monokai"] .border-\[\#333333\] { border-color: #414339 !important; }
+[data-theme="monokai"] .border-\[\#474747\] { border-color: #575b4e !important; }
+[data-theme="monokai"] .text-\[\#cccccc\] { color: #f8f8f2 !important; }
+[data-theme="monokai"] .text-\[\#999999\] { color: #cfcfc2 !important; }
+[data-theme="monokai"] .text-\[\#6b6b6b\] { color: #75715e !important; }
+[data-theme="monokai"] .hover\:bg-\[\#2a2d2e\]:hover { background-color: #3e3d32 !important; }
+[data-theme="monokai"] .hover\:bg-\[\#4a4a4a\]:hover { background-color: #555546 !important; }
+
+/* High Contrast Black adapters */
+[data-theme="hc-black"] .bg-\[\#1e1e1e\] { background-color: #000000 !important; }
+[data-theme="hc-black"] .bg-\[\#252526\] { background-color: #000000 !important; }
+[data-theme="hc-black"] .bg-\[\#2d2d2d\] { background-color: #111111 !important; }
+[data-theme="hc-black"] .bg-\[\#2a2d2e\] { background-color: #1f1f1f !important; }
+[data-theme="hc-black"] .bg-\[\#181818\],
+[data-theme="hc-black"] .bg-\[\#141414\] { background-color: #000000 !important; }
+[data-theme="hc-black"] .bg-\[\#3c3c3c\] { background-color: #1f1f1f !important; }
+[data-theme="hc-black"] .border-\[\#333333\] { border-color: #6fc1ff !important; }
+[data-theme="hc-black"] .border-\[\#474747\] { border-color: #ffffff !important; }
+[data-theme="hc-black"] .text-\[\#cccccc\] { color: #ffffff !important; }
+[data-theme="hc-black"] .text-\[\#999999\] { color: #e0e0e0 !important; }
+[data-theme="hc-black"] .text-\[\#6b6b6b\] { color: #9cdcfe !important; }
+[data-theme="hc-black"] .hover\:bg-\[\#2a2d2e\]:hover { background-color: #1f1f1f !important; }
+[data-theme="hc-black"] .hover\:bg-\[\#4a4a4a\]:hover { background-color: #2a2a2a !important; }

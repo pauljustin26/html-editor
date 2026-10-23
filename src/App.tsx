@@ -20,7 +20,7 @@ import { beautifyHTML, minifyHTML, cleanWordHTML } from './utils/htmlFormatter';
 import { getBreadcrumbs } from './utils/breadcrumbParser';
 import type { BreadcrumbNode } from './utils/breadcrumbParser';
 import { useDebounce } from './hooks/useDebounce';
-import type { ProductRow, SidebarTab, EditorViewMode } from './types';
+import { THEME_OPTIONS, type ProductRow, type SidebarTab, type EditorViewMode, type AppThemeId } from './types';
 
 const DEFAULT_PC_HTML = `<!-- Desktop (PC) HTML Description -->
 <div class="pc-description" style="max-width: 900px; margin: 0 auto; font-family: sans-serif;">
@@ -80,6 +80,16 @@ export default function App() {
   // Active code pointer
   const activeHtml = editorMode === 'pc' ? pcHtml : spHtml;
 
+  // Theme state with LocalStorage persistence
+  const [theme, setTheme] = useState<AppThemeId>(() => {
+    try {
+      const saved = localStorage.getItem('htmleditor_theme');
+      return (saved as AppThemeId) || 'vs-dark';
+    } catch {
+      return 'vs-dark';
+    }
+  });
+
   const [cursorLine, setCursorLine] = useState(1);
   const [cursorColumn, setCursorColumn] = useState(1);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -89,6 +99,31 @@ export default function App() {
   const [products, setProducts] = useState<ProductRow[]>([]);
   const [activeProductId, setActiveProductId] = useState<string | null>(null);
   const [platform, setPlatform] = useState('rakuten');
+
+  // Editor ref
+  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+  const monacoRef = useRef<Monaco | null>(null);
+
+  // Sync theme changes to document body & Monaco
+  const handleThemeChange = useCallback((newTheme: AppThemeId) => {
+    setTheme(newTheme);
+    try {
+      localStorage.setItem('htmleditor_theme', newTheme);
+    } catch {
+      // Storage unavailable
+    }
+    document.documentElement.setAttribute('data-theme', newTheme);
+
+    const monacoThemeName = THEME_OPTIONS.find(t => t.id === newTheme)?.monacoTheme || 'vs-dark';
+    if (monacoRef.current) {
+      monacoRef.current.editor.setTheme(monacoThemeName);
+    }
+  }, []);
+
+  // Set initial theme attribute on mount
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
   // Global shortcut for Feedback (Ctrl+Shift+F or Cmd+Shift+F)
   useEffect(() => {
@@ -101,10 +136,6 @@ export default function App() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
-
-  // Editor ref
-  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-  const monacoRef = useRef<Monaco | null>(null);
 
   // Debounced active HTML for linting & image parsing
   const debouncedActiveHtml = useDebounce(activeHtml, 300);
@@ -144,10 +175,38 @@ export default function App() {
     updateMarkers(diagnostics, monacoRef.current, editorRef.current);
   }, [diagnostics, updateMarkers]);
 
-  // Editor mount
+  // Editor mount & custom theme registration
   const handleEditorMount = useCallback((editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
     editorRef.current = editor;
     monacoRef.current = monaco;
+
+    // Register Monokai theme definition
+    monaco.editor.defineTheme('monokai', {
+      base: 'vs-dark',
+      inherit: true,
+      rules: [
+        { token: 'comment', foreground: '75715e' },
+        { token: 'tag', foreground: 'f92672' },
+        { token: 'tag.id', foreground: 'a6e22e' },
+        { token: 'tag.class', foreground: 'a6e22e' },
+        { token: 'attribute.name', foreground: 'a6e22e' },
+        { token: 'attribute.value', foreground: 'e6db74' },
+        { token: 'string', foreground: 'e6db74' },
+        { token: 'delimiter', foreground: 'f8f8f2' },
+      ],
+      colors: {
+        'editor.background': '#272822',
+        'editor.foreground': '#f8f8f2',
+        'editorCursor.foreground': '#f8f8f0',
+        'editor.lineHighlightBackground': '#3e3d32',
+        'editorLineNumber.foreground': '#90908a',
+        'editorLineNumber.activeForeground': '#c2c2bf',
+      },
+    });
+
+    // Apply current theme
+    const activeMonacoTheme = THEME_OPTIONS.find(t => t.id === theme)?.monacoTheme || 'vs-dark';
+    monaco.editor.setTheme(activeMonacoTheme);
 
     monaco.languages.html?.htmlDefaults?.setOptions?.({
       suggest: { html5: true },
@@ -166,7 +225,7 @@ export default function App() {
     });
 
     updateMarkers(lintHTML(activeHtml), monaco, editor);
-  }, [activeHtml, updateMarkers]);
+  }, [activeHtml, theme, updateMarkers]);
 
   // Editor content change
   const handleEditorChange = useCallback((value: string | undefined) => {
@@ -191,7 +250,7 @@ export default function App() {
   // Switching editor mode between PC and SP
   const switchEditorMode = useCallback((mode: EditorViewMode) => {
     setEditorMode(mode);
-    setPreviewMode(mode); // Auto-sync preview with active editing tab
+    setPreviewMode(mode);
     const nextHtml = mode === 'pc' ? pcHtml : spHtml;
     if (editorRef.current && editorRef.current.getValue() !== nextHtml) {
       editorRef.current.setValue(nextHtml);
@@ -304,10 +363,11 @@ export default function App() {
     }
   }, [products, editorMode]);
 
-  // Editor Left Pane with PC / SP tabs
+  const activeMonacoTheme = THEME_OPTIONS.find(t => t.id === theme)?.monacoTheme || 'vs-dark';
+
+  // Editor Left Pane
   const editorPane = (
     <div className="flex flex-col h-full">
-      {/* Editor Header with PC & Smartphone Code Tabs */}
       <div className="flex items-center h-8 bg-[#252526] border-b border-[#333333] px-2 shrink-0 select-none">
         <div className="flex items-center gap-1">
           <button
@@ -366,7 +426,7 @@ export default function App() {
           value={activeHtml}
           onChange={handleEditorChange}
           onMount={handleEditorMount}
-          theme="vs-dark"
+          theme={activeMonacoTheme}
           options={{
             fontSize: 13,
             fontFamily: "'Cascadia Code', 'Consolas', 'Courier New', monospace",
@@ -425,6 +485,8 @@ export default function App() {
         pcHtml={pcHtml}
         spHtml={spHtml}
         activeMode={editorMode}
+        theme={theme}
+        onThemeChange={handleThemeChange}
         onBeautify={handleBeautify}
         onMinify={handleMinify}
         onCleanWord={handleCleanWord}
@@ -465,6 +527,8 @@ export default function App() {
         diagnosticCount={diagnostics.length}
         platform={platform}
         onPlatformChange={setPlatform}
+        theme={theme}
+        onThemeChange={handleThemeChange}
       />
 
       {/* Batch modal */}
