@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+/* VS Code Dark+ Theme Tokens */
+:root {
+  --bg-primary: #1e1e1e;
+  --bg-secondary: #252526;
+  --bg-tertiary: #2d2d2d;
+  --bg-hover: #2a2d2e;
+  --bg-active: #37373d;
+  --border-primary: #333333;
+  --border-secondary: #474747;
+  --accent: #007acc;
+  --accent-hover: #1a8ad4;
+  --text-primary: #cccccc;
+  --text-secondary: #999999;
+  --text-muted: #6b6b6b;
+  --error: #f44747;
+  --warning: #cca700;
+  --success: #4ec9b0;
+  --info: #569cd6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+#root {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Custom scrollbar - VS Code style */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+::-webkit-scrollbar-thumb {
+  background: #424242;
+  border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #555555;
+}
+::-webkit-scrollbar-corner {
+  background: var(--bg-secondary);
+}
+
+/* Japanese text safety */
+.jp-safe {
+  word-break: break-all;
+  overflow-wrap: break-word;
+}
