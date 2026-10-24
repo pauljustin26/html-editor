@@ -28,7 +28,7 @@ const DEFAULT_PC_HTML = `<!-- Desktop HTML Layout -->
     <h1 style="font-size: 24px; color: #111; margin: 0;">Modern Web Component</h1>
     <p style="font-size: 14px; color: #666; margin: 6px 0 0;">Clean, modular HTML designed for desktop viewing.</p>
   </header>
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
     <div style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 16px;">
       <h3 style="font-size: 16px; margin-top: 0;">Feature Highlights</h3>
       <ul style="font-size: 13px; color: #444; padding-left: 20px; line-height: 1.6;">

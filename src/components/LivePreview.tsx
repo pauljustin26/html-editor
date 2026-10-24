@@ -435,6 +435,7 @@ export function LivePreview({ pcHtml, spHtml, activeView, onViewChange }: LivePr
               <iframe
                 ref={iframeRef}
                 sandbox="allow-same-origin"
+srcDoc={generatePreviewDoc(currentHtml, activeView)}
                 title="Desktop HTML Preview"
                 className="w-full h-full border-none"
               />
@@ -449,6 +450,7 @@ export function LivePreview({ pcHtml, spHtml, activeView, onViewChange }: LivePr
               <iframe
                 ref={iframeRef}
                 sandbox="allow-same-origin"
+srcDoc={generatePreviewDoc(currentHtml, activeView)}
                 title="Mobile (SP) HTML Preview"
                 className="flex-1 w-full border-none"
               />
